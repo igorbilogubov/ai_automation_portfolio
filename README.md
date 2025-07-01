@@ -29,8 +29,8 @@ A Telegram chatbot that lets users:
 - Instant answers to questions about your saved sites
 
 **Files:**
-- [`web-insight-bot/web_insight.json`](web-insight-bot/web_insight.json) — main n8n workflow file
-- [`web-insight-bot/web_parser.json`](web-insight-bot/web_parser.json) — web parser
+- [`web-insight-bot/web-insight.json`](web-insight-bot/web-insight.json) — main n8n workflow file
+- [`web-insight-bot/web-parser.json`](web-insight-bot/web-parser.json) — web parser
 - [`images/preview-web-insight-bot.png`](images/preview-web-insight-bot.png) — UI screenshot (see below)
 
 ---
