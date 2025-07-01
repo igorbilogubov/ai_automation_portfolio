@@ -1,0 +1,830 @@
+{
+  "name": "Web parser",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const html = $input.first().json.data;\nconst text = html\n  .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n  .replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '')\n  .replace(/<!--[\\s\\S]*?-->/g, '')\n  .replace(/<[^>]+>/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\nreturn [{ text }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1080,
+        180
+      ],
+      "id": "8f42d29f-6ebc-4027-a94e-cefd6a7507b8",
+      "name": "Remove tags"
+    },
+    {
+      "parameters": {
+        "jsCode": "let url = $input.first().json.message.text;\n\nurl = url.trim();\n\nif (!/^https?:\\/\\//i.test(url)) {\n  url = \"https://\" + url;\n}\n\nreturn [{ json: { url } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        180
+      ],
+      "id": "95f9bbcc-3585-49d9-a508-8f1bcc791de1",
+      "name": "Check url"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1300,
+        180
+      ],
+      "id": "a334317a-4eec-4d49-9a72-780f37466113",
+      "name": "Parsing page"
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = $input.first().json.text;\nconst chunkSize = 500;\nconst overlap = 100;\nconst chunks = [];\nfor (let i = 0; i < text.length; i += (chunkSize - overlap)) {\n  chunks.push(text.slice(i, i + chunkSize));\n}\nreturn chunks.map(chunk => ({ json: { chunk } }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -860,
+        180
+      ],
+      "id": "1c2bc3e4-41e7-4c47-9560-d532e768c9eb",
+      "name": "Split text"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        300
+      ],
+      "id": "3f90012b-e634-4a5c-bbc2-8cb633215a49",
+      "name": "Data Loader"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "={{ $json.collection }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        -420,
+        180
+      ],
+      "id": "13426f65-c173-4b6b-84c7-6f836b445b0d",
+      "name": "Insert to Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "WEUjseqjDOJdNVpT",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keep": "lastItems"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1740,
+        860
+      ],
+      "id": "57521477-4a19-4662-9419-b2a12530ab60",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -420,
+        300
+      ],
+      "id": "8a5152f6-8b61-4e14-bbe8-6c786b6d81a5",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "gdjl83LWPohyqMmT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblEA9Ea4ancrrO1e",
+          "mode": "list",
+          "cachedResultName": "Urls",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tblEA9Ea4ancrrO1e"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "User": "={{ $('Start').item.json.message.from.id }}",
+            "Url": "={{ $('Check url').item.json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Url",
+              "displayName": "Url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "User",
+              "displayName": "User",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1080,
+        980
+      ],
+      "id": "37684731-dd48-47af-8a6c-01752e5f6f5a",
+      "name": "Add url",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3bb890b6-33eb-421e-ba58-c0bfce424af1",
+              "name": "=url",
+              "value": "={{ $json.fields.Url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -840,
+        1080
+      ],
+      "id": "4b41a4a8-1ee8-41fa-991d-fad4f660bd86",
+      "name": "Set url"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1740,
+        180
+      ],
+      "id": "79821dfe-e983-4b81-8abf-f8b5336e554a",
+      "name": "Start"
+    },
+    {
+      "parameters": {
+        "content": "## Web parsing",
+        "height": 560,
+        "width": 1740,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1840,
+        -20
+      ],
+      "id": "2b95f098-7b17-4ae4-bc4c-22cbb187c2df",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Save",
+        "height": 800,
+        "width": 1240,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1840,
+        560
+      ],
+      "id": "19f8eb09-9a72-4009-bb3f-a1aac0a9dfce",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblEA9Ea4ancrrO1e",
+          "mode": "list",
+          "cachedResultName": "Urls",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tblEA9Ea4ancrrO1e"
+        },
+        "filterByFormula": "=AND({User}={{ $('Start').item.json.message.from.id }},{Url}='{{ $('Check url').item.json.url }}')",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1520,
+        1060
+      ],
+      "id": "2768b118-396e-46c3-93ea-831865892e4d",
+      "name": "Get url",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldgQN2rUrCsYtj4",
+          "mode": "list",
+          "cachedResultName": "Session",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tbldgQN2rUrCsYtj4"
+        },
+        "filterByFormula": "={User}={{ $('Start').item.json.message.from.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1520,
+        680
+      ],
+      "id": "bc02e5d2-0af2-41fc-8155-9ad481d070aa",
+      "name": "Get user",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a55d4a19-f0e4-4ab5-9365-74255b20f292",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1300,
+        680
+      ],
+      "id": "06854c1d-fcdd-4673-8819-a30b5970a255",
+      "name": "If user exist"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldgQN2rUrCsYtj4",
+          "mode": "list",
+          "cachedResultName": "Session",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tbldgQN2rUrCsYtj4"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get user').item.json.id }}",
+            "User": "={{ $('Get user').item.json.User }}",
+            "Current url": "={{ $('Check url').item.json.url }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "User",
+              "displayName": "User",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Current url",
+              "displayName": "Current url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1080,
+        600
+      ],
+      "id": "866fe2f4-0fed-4525-8109-1b19bcec59a6",
+      "name": "Update session",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldgQN2rUrCsYtj4",
+          "mode": "list",
+          "cachedResultName": "Session",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tbldgQN2rUrCsYtj4"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "User": "={{ $('Start').item.json.message.from.id }}",
+            "Current url": "={{ $('Check url').item.json.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "User",
+              "displayName": "User",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Current url",
+              "displayName": "Current url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        -1080,
+        780
+      ],
+      "id": "2eb075d1-6745-443f-a8c9-e93524c264f5",
+      "name": "Create session",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a55d4a19-f0e4-4ab5-9365-74255b20f292",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1300,
+        1060
+      ],
+      "id": "52c1d497-37ee-4134-a73a-b2d3a8245c28",
+      "name": "If url not exist"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        1160
+      ],
+      "id": "6e5b6c66-adb0-481f-a621-c6fb2c154870",
+      "name": "Next"
+    },
+    {
+      "parameters": {
+        "jsCode": "const url = $('Check url').first().json.url; \n\nlet collection = url.replace(/^https?:\\/\\//, '');\ncollection = collection.replace(/\\//g, '');\n\nreturn $input.all().map(item => {\n  item.json.collection = collection;\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        180
+      ],
+      "id": "835c3530-c7ab-48dd-a4c2-546680dcfb95",
+      "name": "Reformat url"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {
+          "update_id": 49840555,
+          "message": {
+            "message_id": 128,
+            "from": {
+              "id": 145256856,
+              "is_bot": false,
+              "first_name": "Igor",
+              "last_name": "Bilogubov",
+              "username": "IgorBilogubov",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 145256856,
+              "first_name": "Igor",
+              "last_name": "Bilogubov",
+              "username": "IgorBilogubov",
+              "type": "private"
+            },
+            "date": 1751350752,
+            "text": "repli.so",
+            "entities": [
+              {
+                "offset": 0,
+                "length": 8,
+                "type": "url"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Remove tags": {
+      "main": [
+        [
+          {
+            "node": "Split text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check url": {
+      "main": [
+        [
+          {
+            "node": "Parsing page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsing page": {
+      "main": [
+        [
+          {
+            "node": "Remove tags",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split text": {
+      "main": [
+        [
+          {
+            "node": "Reformat url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert to Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert to Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Get user",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert to Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add url": {
+      "main": [
+        [
+          {
+            "node": "Set url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Check url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get url": {
+      "main": [
+        [
+          {
+            "node": "If url not exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get user": {
+      "main": [
+        [
+          {
+            "node": "If user exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If user exist": {
+      "main": [
+        [
+          {
+            "node": "Update session",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update session": {
+      "main": [
+        []
+      ]
+    },
+    "If url not exist": {
+      "main": [
+        [
+          {
+            "node": "Add url",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Next",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Next": {
+      "main": [
+        [
+          {
+            "node": "Set url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reformat url": {
+      "main": [
+        [
+          {
+            "node": "Insert to Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4048ab50-c1dc-4f27-8786-7ff99515dfd3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5b153843772dbe457fe9ab0a590f41ad2f842e6ac9886c7f7d6af99e9377afc7"
+  },
+  "id": "9zMVnQPGopen5FlI",
+  "tags": []
+}

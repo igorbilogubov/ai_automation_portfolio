@@ -1,0 +1,1124 @@
+{
+  "name": "Web insight",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "*"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        140
+      ],
+      "id": "b1a2df55-5fc9-460f-b8f6-f97839c6ed9f",
+      "name": "Telegram Trigger",
+      "webhookId": "82d5522d-093b-4f99-ab69-63db920d0d49",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "=message{{ $json.message.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "1f500a99-3284-4240-8859-badf3b363f20"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "35931de7-1433-4936-a2f3-ae098eb4b3a3",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "add_new_url",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "149b957f-4212-4d09-b5dc-a8bafc17334e",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "list",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d2dad811-6b18-43e5-b1fd-22b0661d67a0",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "back",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "23e0da61-2942-4507-8a5f-60a5c6af93f1",
+                    "leftValue": "=message{{ $json.message.text }}",
+                    "rightValue": ".",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5f2996ac-edba-4f54-a799-46cd913349f7",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b5d9bf8b-a0f0-47c6-acba-e247f98370a9",
+                    "leftValue": "=message{{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        300,
+        35
+      ],
+      "id": "37d9f54f-a54e-40ae-8d1f-d81211539f3e",
+      "name": "Switch",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "topK": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        880
+      ],
+      "id": "d7b2217f-5ac7-4cb1-afdf-31d02b44ca23",
+      "name": "Vector Store Retriever"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1020,
+        1120
+      ],
+      "id": "f5a0eccc-7487-4652-9ed4-8f7c5a1d862c",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "gdjl83LWPohyqMmT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        920,
+        880
+      ],
+      "id": "589b5561-87d9-43d6-be97-df72b59af15e",
+      "name": "gpt-4.1-mini",
+      "credentials": {
+        "openAiApi": {
+          "id": "gdjl83LWPohyqMmT",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "Send a link to the site",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        520,
+        -460
+      ],
+      "id": "3ff07560-aef3-48db-bae4-9445aa0d6e10",
+      "name": "Send msg (Add first url)",
+      "webhookId": "9c173381-15d9-44b8-b3e2-a71b30e1ec04",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "Send a link to the site",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        520,
+        -260
+      ],
+      "id": "c043758a-e3ff-4601-a08c-d9127ae249da",
+      "name": "Send msg (Add new url)",
+      "webhookId": "9c173381-15d9-44b8-b3e2-a71b30e1ec04",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblEA9Ea4ancrrO1e",
+          "mode": "list",
+          "cachedResultName": "Urls",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tblEA9Ea4ancrrO1e"
+        },
+        "filterByFormula": "={User}='{{ $json.callback_query.from.id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        -60
+      ],
+      "id": "f3e80e26-6b47-4049-aa7c-488111402d6a",
+      "name": "Get list",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": " Menu",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Add new url",
+                    "additionalFields": {
+                      "callback_data": "add_new_url"
+                    }
+                  },
+                  {
+                    "text": "List",
+                    "additionalFields": {
+                      "callback_data": "list"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        520,
+        140
+      ],
+      "id": "5bcbd704-ab2f-44d7-a654-865bedea1151",
+      "name": "Show buttons (Add new url, List)",
+      "webhookId": "9c173381-15d9-44b8-b3e2-a71b30e1ec04",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.6,
+      "position": [
+        960,
+        740
+      ],
+      "id": "b1fe2ae6-6ed8-4f5a-bde7-e6420111cb3f",
+      "name": "QA Agent"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "9zMVnQPGopen5FlI",
+          "mode": "list",
+          "cachedResultName": "Parser"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        520,
+        340
+      ],
+      "id": "9b520e90-d68a-4c61-b228-85c4c7496b5b",
+      "name": "Parsing page",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "={{ $('Reformat url').item.json.collection }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        1020,
+        1000
+      ],
+      "id": "9768dac3-3479-4f9b-8bc8-0eb0106d1e7e",
+      "name": "Get from Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "WEUjseqjDOJdNVpT",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Входной массив, например из Airtable или другой node\nconst sites = $input.all().map(item => item.json);\n\nconst inline_keyboard = sites.map(site => [\n  {\n    text: site.Url.replace(/^https?:\\/\\//, ''),\n    callback_data: site.Url.replace(/^https?:\\/\\//, '') // убирает https:// или http://\n  }\n]);\n\nreturn [\n  {\n    json: {\n      text: \"Select site:\",\n      reply_markup: JSON.stringify({\n        inline_keyboard: inline_keyboard\n      })\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        -60
+      ],
+      "id": "6f26351f-36d4-434d-9932-1d842a358778",
+      "name": "Select site"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot7769148517:AAEI0g2jIKMl9gyp7gI1OfofUUrWvSqNOXo/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').first().json.callback_query.message.chat.id }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "reply_markup",
+              "value": "={{ $json.reply_markup }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        -60
+      ],
+      "id": "ef86d46b-9d04-4a51-ba66-7b61241ed507",
+      "name": "Send msg (sites list)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "The site has been successfully added. You can ask any questions you may have.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Back",
+                    "additionalFields": {
+                      "callback_data": "back"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        740,
+        340
+      ],
+      "id": "a86c199a-17f4-43d4-9fb9-e1a4c1af4b92",
+      "name": "Send msg (site added)",
+      "webhookId": "9c173381-15d9-44b8-b3e2-a71b30e1ec04",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "203690f6-2823-4052-971f-715e850841f8",
+              "name": "url",
+              "value": "={{ 'https://' + $json.callback_query.data}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        540
+      ],
+      "id": "b395468c-fceb-4389-b004-5b37152ed8ed",
+      "name": "Set url"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblEA9Ea4ancrrO1e",
+          "mode": "list",
+          "cachedResultName": "Urls",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tblEA9Ea4ancrrO1e"
+        },
+        "filterByFormula": "={Url}='{{ $json.url }}'",
+        "returnAll": false,
+        "limit": 1,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        740,
+        540
+      ],
+      "id": "0306ec51-8c18-435c-acaa-39788fc95355",
+      "name": "Get url",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldgQN2rUrCsYtj4",
+          "mode": "list",
+          "cachedResultName": "Session",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tbldgQN2rUrCsYtj4"
+        },
+        "filterByFormula": "={User}={{ $json.User }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        540
+      ],
+      "id": "9615b2b1-0aa7-46e6-9ceb-bb8e56ddd421",
+      "name": "Get session",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldgQN2rUrCsYtj4",
+          "mode": "list",
+          "cachedResultName": "Session",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tbldgQN2rUrCsYtj4"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "User": "={{ $json.User }}",
+            "id": "={{ $json.id }}",
+            "Current url": "={{ $('Get url').item.json.Url }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "User",
+              "displayName": "User",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Current url",
+              "displayName": "Current url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1180,
+        540
+      ],
+      "id": "c3221394-07e9-4a4b-a44a-3642d4404a8f",
+      "name": "Update session",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.message.chat.id }}",
+        "messageId": "={{ $('Telegram Trigger').item.json.callback_query.message.message_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1400,
+        540
+      ],
+      "id": "2f0b4066-7916-4f44-933e-644c46593548",
+      "name": "Delete last msg",
+      "webhookId": "94574d4c-d588-4536-b181-d084074041be",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.message.chat.id }}",
+        "text": "=The site {{ $json.fields[\"Current url\"] }} selected. You can ask any questions you may have. ",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "< Back",
+                    "additionalFields": {
+                      "callback_data": "back"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1620,
+        540
+      ],
+      "id": "ca704364-36d7-46ce-bb0f-bdcec84240ee",
+      "name": "Send msg (site selected)",
+      "webhookId": "1d470b34-59cc-457c-aa09-9865fc4770cb",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.response }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "< Back",
+                    "additionalFields": {
+                      "callback_data": "back"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1340,
+        740
+      ],
+      "id": "5b36c0ec-035c-4b33-93fb-02bfb24fcab4",
+      "name": "Send msg (answer)",
+      "webhookId": "9c173381-15d9-44b8-b3e2-a71b30e1ec04",
+      "credentials": {
+        "telegramApi": {
+          "id": "5Uby4JwB12HGKfRm",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app0Tw22mQIX1WehL",
+          "mode": "list",
+          "cachedResultName": "Web Insight",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbldgQN2rUrCsYtj4",
+          "mode": "list",
+          "cachedResultName": "Session",
+          "cachedResultUrl": "https://airtable.com/app0Tw22mQIX1WehL/tbldgQN2rUrCsYtj4"
+        },
+        "filterByFormula": "={User}='{{ $json.message.from.id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        740
+      ],
+      "id": "9680ebfa-4e2a-47a1-98d9-5e9d26785505",
+      "name": "Get session 2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "y5tjn4JAg2UPcRUa",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const url = $input.first().json[\"Current url\"];\n\nlet collection = url.replace(/^https?:\\/\\//, '');\ncollection = collection.replace(/\\//g, '');\n\nreturn $input.all().map(item => {\n  item.json.collection = collection;\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        740
+      ],
+      "id": "cff6530f-14f2-4ae7-b11c-16e580d6e264",
+      "name": "Reformat url"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send msg (Add first url)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send msg (Add new url)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get list",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show buttons (Add new url, List)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Parsing page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set url",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get session 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "QA Agent",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Get from Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4.1-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "QA Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get list": {
+      "main": [
+        [
+          {
+            "node": "Select site",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QA Agent": {
+      "main": [
+        [
+          {
+            "node": "Send msg (answer)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsing page": {
+      "main": [
+        [
+          {
+            "node": "Send msg (site added)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get from Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select site": {
+      "main": [
+        [
+          {
+            "node": "Send msg (sites list)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set url": {
+      "main": [
+        [
+          {
+            "node": "Get url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get url": {
+      "main": [
+        [
+          {
+            "node": "Get session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get session": {
+      "main": [
+        [
+          {
+            "node": "Update session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update session": {
+      "main": [
+        [
+          {
+            "node": "Delete last msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete last msg": {
+      "main": [
+        [
+          {
+            "node": "Send msg (site selected)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send msg (answer)": {
+      "main": [
+        []
+      ]
+    },
+    "Get session 2": {
+      "main": [
+        [
+          {
+            "node": "Reformat url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reformat url": {
+      "main": [
+        [
+          {
+            "node": "QA Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c8a959d1-5133-4f6e-93e2-8b6132d7078f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5b153843772dbe457fe9ab0a590f41ad2f842e6ac9886c7f7d6af99e9377afc7"
+  },
+  "id": "o4cgbPyGXT9inTmC",
+  "tags": []
+}
