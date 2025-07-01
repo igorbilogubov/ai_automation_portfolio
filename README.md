@@ -10,7 +10,7 @@
 
 ## 📦 Project List
 
-### 1. Telegram Web Insight Bot
+### 1. [Telegram Web Insight Bot Telegram bot](https://t.me/web_insight_bot)
 
 **Main tools and technologies:**
 - n8n (no-code/low-code automation)
