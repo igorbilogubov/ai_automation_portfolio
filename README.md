@@ -14,9 +14,7 @@ Welcome to my collection of automation and integration workflows built on the [n
 
 ### 1. Telegram Web Insight Bot
 
-## 🛠️ Stack & Technologies
-
-**Main tools and technologies in this project:**
+**Main tools and technologies:**
 - n8n (no-code/low-code automation)
 - Telegram Bot API
 - JavaScript (custom functions in n8n)
