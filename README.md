@@ -1,4 +1,4 @@
-### Welcome to my collection of automation and integration workflows built on the [n8n](https://n8n.io/) platform!
+**Welcome to my collection of automation and integration workflows built on the [n8n](https://n8n.io/) platform!**
 
 ## 🚀 About This Repository
 
