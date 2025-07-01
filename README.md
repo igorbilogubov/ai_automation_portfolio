@@ -37,12 +37,4 @@
 **Files:**
 - [`web-insight-bot/web-insight.json`](web-insight-bot/web-insight.json) — main n8n workflow file
 - [`web-insight-bot/web-parser.json`](web-insight-bot/web-parser.json) — web parser
-- [`images/preview-web-insight-bot.png`](images/preview-web-insight-bot.png) — UI screenshot (see below)
-
----
-
-## 🖼️ Screenshots
-
-| Telegram Web Insight Bot |
-|:---:|
-| ![preview](images/preview-web-insight-bot.png) |
+  
