@@ -14,8 +14,18 @@ Welcome to my collection of automation and integration workflows built on the [n
 
 ### 1. Telegram Web Insight Bot
 
+## 🛠️ Stack & Technologies
+
+**Main tools and technologies in this project:**
+- n8n (no-code/low-code automation)
+- Telegram Bot API
+- JavaScript (custom functions in n8n)
+- Airtable API
+- Qdrant (vector search)
+- OpenAI GPT (language model)
+- HTTP API integrations
+  
 **Description:**  
-A Telegram chatbot that lets users:
 - Add and select websites for analysis
 - Parse selected pages on demand
 - Save and interact with websites via inline button lists
